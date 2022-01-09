@@ -6,6 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Swap, WalletButton } from './components';
 import useWeb3Modal from './hooks/useWeb3Modal';
 import logo from './swapper-logo.png';
+import github from './github.png';
 
 const Main = styled.main`
   align-items: center;
@@ -29,6 +30,26 @@ const Image = styled.img`
   height: 25vmin;
   margin-bottom: 30px;
   pointer-events: none;
+`;
+
+const Footer = styled.footer`
+  bottom: 0;
+  display: flex;
+  justify-content: flex-end;
+  position: absolute;
+  width: 100%;
+
+  img {
+    background-color: ${({ theme }) => theme.colors.white};
+    border-radius: 50%;
+    height: 40px;
+    margin: 0 20px 20px 0;
+    transition: ${({ theme }) => theme.transition};
+
+    &:hover {
+      transform: scale(1.2);
+    }
+  }
 `;
 
 function App() {
@@ -67,6 +88,11 @@ function App() {
         <Image src={logo} alt="Swapper Logo" />
         <Swap loadWeb3Modal={loadWeb3Modal} provider={provider} />
       </Main>
+      <Footer>
+        <a href="https://github.com/owinges/swapper" target="_blank" rel="noreferrer">
+          <img src={github} alt="Check it out on Github" />
+        </a>
+      </Footer>
       <ToastContainer theme="colored" />
     </>
   );
