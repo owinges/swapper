@@ -27,7 +27,7 @@ const Header = styled.header`
 const Image = styled.img`
   border-radius: 50%;
   box-shadow: aliceblue 1px 0px 8px;
-  height: 25vmin;
+  max-width: 250px;
   margin-bottom: 30px;
   pointer-events: none;
 `;
