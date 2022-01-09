@@ -4,8 +4,8 @@ import styled from '@emotion/styled';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Swap, WalletButton } from './components';
-import logo from './swapper-logo.png';
 import useWeb3Modal from './hooks/useWeb3Modal';
+import logo from './swapper-logo.png';
 
 const Main = styled.main`
   align-items: center;
@@ -28,6 +28,7 @@ const Image = styled.img`
   box-shadow: aliceblue 1px 0px 8px;
   height: 25vmin;
   margin-bottom: 30px;
+  pointer-events: none;
 `;
 
 function App() {

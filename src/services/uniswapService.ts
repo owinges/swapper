@@ -49,16 +49,7 @@ export class UniswapService {
     const deadline = BigNumber.from(time);
     const amountIn = parseEther(fromInputValue);
 
-    console.log('amountIn');
-    console.log(amountIn);
     const amountOut: [bigint, bigint] = await this._routerContract.callStatic.getAmountsOut(amountIn, [fromToken.address, toToken.address]);
-
-    console.log('amountOut');
-    const amount0 = Number(formatUnits(amountOut[0]));
-    const amount1 = Number(formatUnits(amountOut[1]));
-
-    console.log('amount0 -> ', amount0);
-    console.log('amount1 -> ', amount1);
 
     return await this._routerContract.swapExactETHForTokens(amountOut[1], [fromToken.address, toToken.address], accounts[0], deadline, {
       value: amountIn,
@@ -70,8 +61,6 @@ export class UniswapService {
 
     const factoryContract = new Contract(factory, abis.factory, this.defaultProvider);
     const pairFor: string = await factoryContract.getPair(fromTokenAddress.toLowerCase(), toTokenAddress.toLowerCase());
-
-    console.log('pairFor:', pairFor);
 
     return pairFor;
   }

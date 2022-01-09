@@ -6,7 +6,7 @@ import { Web3Provider } from '@ethersproject/providers';
 import { LoadingSpinner, TokenDropdown } from '..';
 import { Token, tokens } from '../TokenDropdown/tokenList';
 import { abis } from '../../contracts';
-import { CoinGeckoService } from '../../services/CoinGeckoService';
+import { getPriceOfCoins } from '../../services/coinGeckoService';
 import { useQuery } from 'react-query';
 import { BigNumber } from '@ethersproject/bignumber';
 
@@ -63,7 +63,7 @@ type TokenInputProps = {
 export const TokenInput: FC<TokenInputProps> = ({ id, isLoading, onInputChange, onTokenSelect, provider, selectedToken, value }) => {
   const [tokenBalance, setTokenBalance] = useState<string>('0');
   const { data: coin, isFetching } = useQuery(selectedToken!.address, () =>
-    CoinGeckoService.getPriceOfCoins([selectedToken!.coingeckoId]).then((res) => res.data),
+    getPriceOfCoins([selectedToken!.coingeckoId]).then((res) => res.data),
   );
 
   useEffect(() => {

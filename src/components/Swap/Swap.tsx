@@ -2,7 +2,7 @@ import React, { FC, FormEvent, useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { Contract } from '@ethersproject/contracts';
 import { formatEther, formatUnits } from '@ethersproject/units';
-import { AlchemyWebSocketProvider, Web3Provider } from '@ethersproject/providers';
+import { Web3Provider } from '@ethersproject/providers';
 import { SwapButton, SwapFooter, TokenInput } from '..';
 import { Token, tokens } from '../TokenDropdown/tokenList';
 import { abis } from '../../contracts';
@@ -12,8 +12,7 @@ import { toast } from 'react-toastify';
 const Container = styled.section`
   background-color: ${({ theme }) => theme.colors.white};
   border-radius: ${({ theme }) => theme.borderRadius.xl};
-  /* box-shadow: rgba(0, 0, 0, 0.01) 0px 0px 1px, rgba(0, 0, 0, 0.04) 0px 4px 8px, rgba(0, 0, 0, 0.04) 0px 16px 24px,
-    rgba(0, 0, 0, 0.01) 0px 24px 32px; */
+  box-shadow: aliceblue 1px 0px 8px;
   max-width: 480px;
   padding: 8px;
   width: 100%;
@@ -49,18 +48,10 @@ export const Swap: FC<SwapProps> = ({ loadWeb3Modal, provider }) => {
     const checkInsufficientFunds = async () => {
       if (!provider) return;
 
-      console.log('checking for insufficient funds');
-
       const accounts = await provider.listAccounts();
       const balance = await provider.getBalance(accounts[0]);
 
       const isInsufficient = Number(fromInputValue) > Number(formatEther(balance));
-
-      if (isInsufficient) {
-        console.log('funds are insufficient');
-      } else {
-        console.log('funds are NOT insufficient');
-      }
 
       setInsufficientFunds(isInsufficient);
     };
@@ -71,8 +62,6 @@ export const Swap: FC<SwapProps> = ({ loadWeb3Modal, provider }) => {
   // Get the initial reserves whenever different tokens are selected.
   useEffect(() => {
     const getReserves = async () => {
-      console.log('getting new reserves');
-
       const uniswap = new UniswapService(provider);
 
       setLoadingReserves(true);
@@ -82,8 +71,6 @@ export const Swap: FC<SwapProps> = ({ loadWeb3Modal, provider }) => {
       setPairAddress(pairAddress);
 
       const { reserves0, reserves1 } = await uniswap.getReservesForPair(pairAddress);
-
-      console.log('setting new reserves');
 
       setReserves({ reserves0, reserves1 });
 
@@ -102,19 +89,12 @@ export const Swap: FC<SwapProps> = ({ loadWeb3Modal, provider }) => {
 
       const exchangeContract = new Contract(pairAddress, abis.pair, defaultProvider);
 
-      // TODO: Check if it's necessary to clean up these listeners.
-      // exchangeContract.removeAllListeners();
-
       exchangeContract.on('Sync', (res0, res1) => {
         const reserves0 = Number(formatUnits(res0));
         const reserves1 = Number(formatUnits(res1));
 
-        console.log('setting updated reserves');
-
         setReserves({ reserves0, reserves1 });
       });
-
-      console.log(`there are currently ${exchangeContract.listeners('Sync').length} active listeners`);
     };
 
     listenForChanges();
@@ -123,8 +103,6 @@ export const Swap: FC<SwapProps> = ({ loadWeb3Modal, provider }) => {
   // Set prices whenever reserves change.
   useEffect(() => {
     if (!reserves) return;
-
-    console.log('setting prices');
 
     setPrices({
       fromToken: reserves?.reserves0 / reserves?.reserves1,
@@ -174,9 +152,7 @@ export const Swap: FC<SwapProps> = ({ loadWeb3Modal, provider }) => {
     const uniswap = new UniswapService(provider);
 
     try {
-      const result = await uniswap.handleSwap(fromInputValue, fromToken, toToken);
-
-      console.log(result);
+      await uniswap.handleSwap(fromInputValue, fromToken, toToken);
     } catch (exception: any) {
       if (exception.code === 'INSUFFICIENT_FUNDS') {
         toast.error('You have insufficient funds for this swap.');

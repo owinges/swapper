@@ -76,8 +76,6 @@ export const WalletButton: FC<WalletButtonProps> = ({ loadWeb3Modal, logoutOfWeb
     window.ethereum?.removeAllListeners('accountsChanged');
 
     window.ethereum?.on('accountsChanged', (accounts: string[]) => {
-      console.log('fetching new account details');
-
       if (accounts.length === 0) return;
 
       // Update button text with the new account details.

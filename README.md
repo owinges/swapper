@@ -9,15 +9,16 @@ You can view the deployed app at: https://swapper-rho.vercel.app/
 ## Current features
 
 - Swap ETH/WETH for one of 32 available tokens on Ethereum mainnet.
-- Swap ETH/WETH for DAI on Goerli, Kovan, Rinkeby or Ropsten testnets.
 
 ## Upcoming features
 
+- Swap ETH/WETH for DAI on Goerli, Kovan, Rinkeby or Ropsten testnets.
 - Estimated gas price calculation.
 - Swap tokens for ETH/WETH.
 - Swap tokens for tokens.
 - Select other currencies for price reference.
 - Add tokens that aren't listed in the dropdown.
+- WalletConnect integration.
 
 ## Prerequisites
 

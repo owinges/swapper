@@ -7,6 +7,7 @@ const Button = styled.button`
   border: none;
   border-radius: ${({ theme }) => theme.borderRadius.lg};
   color: ${({ theme }) => theme.colors.white};
+  cursor: pointer;
   font-size: ${({ theme }) => theme.fontSize.lg};
   font-weight: ${({ theme }) => theme.fontWeight.bold};
   outline: none;
@@ -23,7 +24,7 @@ const Button = styled.button`
     box-shadow: ${({ theme }) => theme.boxShadow.primary};
   }
 
-  &:active {
+  &:active:not(:disabled) {
     background-color: ${({ theme }) => theme.colors.primaryDarker};
     box-shadow: ${({ theme }) => theme.boxShadow.primaryDarker};
   }
