@@ -12,7 +12,7 @@ export class UniswapService {
   constructor(private _provider?: Web3Provider) {
     if (_provider) {
       const signer = _provider.getSigner();
-  
+
       this._routerContract = new Contract(addresses[MAINNET_ID].router02, abis.router02, signer);
     } else {
       this._routerContract = new Contract(addresses[MAINNET_ID].router02, abis.router02, this.defaultProvider);

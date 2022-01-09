@@ -4,7 +4,7 @@ import styled from '@emotion/styled';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Swap, WalletButton } from './components';
-import logo from './ethereumLogo.png';
+import logo from './swapper-logo.png';
 import useWeb3Modal from './hooks/useWeb3Modal';
 
 const Main = styled.main`
@@ -24,8 +24,10 @@ const Header = styled.header`
 `;
 
 const Image = styled.img`
-  height: 30vmin;
-  margin-bottom: 16px;
+  border-radius: 50%;
+  box-shadow: aliceblue 1px 0px 8px;
+  height: 25vmin;
+  margin-bottom: 30px;
 `;
 
 function App() {
@@ -61,7 +63,7 @@ function App() {
         <WalletButton loadWeb3Modal={loadWeb3Modal} logoutOfWeb3Modal={logoutOfWeb3Modal} provider={provider} />
       </Header>
       <Main>
-        <Image src={logo} alt="ethereum-logo" />
+        <Image src={logo} alt="Swapper Logo" />
         <Swap loadWeb3Modal={loadWeb3Modal} provider={provider} />
       </Main>
       <ToastContainer theme="colored" />
