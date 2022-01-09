@@ -100,7 +100,9 @@ export const TokenInput: FC<TokenInputProps> = ({ id, isLoading, onInputChange, 
   const getPrice = () => {
     if (!selectedToken || !coin || !coin[selectedToken.coingeckoId]) return;
 
-    return coin ? toCurrency(coin[selectedToken.coingeckoId].usd) : 'Unknown price';
+    const valueByCurrency = coin[selectedToken.coingeckoId].usd * Number(value);
+
+    return coin ? toCurrency(valueByCurrency) : 'Unknown price';
   };
 
   const handleInputChange = (event: FormEvent<HTMLInputElement>) => {
@@ -128,7 +130,7 @@ export const TokenInput: FC<TokenInputProps> = ({ id, isLoading, onInputChange, 
         <TokenDropdown onSelect={onTokenSelect} selectedToken={selectedToken} tokens={tokens} disabled={id === 'fromInput'} />
       </Row>
       <Row>
-        <span>Price: {isFetching ? <LoadingSpinner style={{ marginLeft: 6, position: 'absolute' }} /> : getPrice()}</span>
+        <span>{isFetching ? <LoadingSpinner style={{ position: 'absolute' }} /> : `~${getPrice()}`}</span>
         <span>Balance: {tokenBalance}</span>
       </Row>
     </InputContainer>
