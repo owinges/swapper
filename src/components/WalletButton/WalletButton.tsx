@@ -83,8 +83,6 @@ export const WalletButton: FC<WalletButtonProps> = ({ loadWeb3Modal, logoutOfWeb
       // Update button text with the new account details.
       fetchAccount();
     });
-
-    console.log(`account listeners: ${window.ethereum?.listenerCount('accountsChanged')}`);
   }, [account, provider]);
 
   const handleClick = () => {
