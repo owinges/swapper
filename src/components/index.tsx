@@ -1,5 +1,5 @@
 export * from './LoadingSpinner/LoadingSpinner';
-export * from './Swap/Swap';
+export * from './SwapContainer/SwapContainer';
 export * from './SwapButton/SwapButton';
 export * from './SwapFooter/SwapFooter';
 export * from './TokenDropdown/TokenDropdown';

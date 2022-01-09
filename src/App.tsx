@@ -3,10 +3,10 @@ import { Web3Provider } from '@ethersproject/providers';
 import styled from '@emotion/styled';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Swap, WalletButton } from './components';
+import { SwapContainer, WalletButton } from './components';
 import useWeb3Modal from './hooks/useWeb3Modal';
-import logo from './swapper-logo.png';
-import github from './github.png';
+import logo from './assets/swapper-logo.png';
+import github from './assets/github.png';
 
 const Main = styled.main`
   align-items: center;
@@ -24,7 +24,7 @@ const Header = styled.header`
   min-height: 70px;
 `;
 
-const Image = styled.img`
+const SwapperLogo = styled.img`
   border-radius: 50%;
   box-shadow: aliceblue 1px 0px 8px;
   max-width: 250px;
@@ -85,8 +85,8 @@ function App() {
         <WalletButton loadWeb3Modal={loadWeb3Modal} logoutOfWeb3Modal={logoutOfWeb3Modal} provider={provider} />
       </Header>
       <Main>
-        <Image src={logo} alt="Swapper Logo" />
-        <Swap loadWeb3Modal={loadWeb3Modal} provider={provider} />
+        <SwapperLogo src={logo} alt="Swapper Logo" />
+        <SwapContainer loadWeb3Modal={loadWeb3Modal} provider={provider} />
       </Main>
       <Footer>
         <a href="https://github.com/owinges/swapper" target="_blank" rel="noreferrer">

@@ -18,12 +18,12 @@ const Container = styled.section`
   width: 100%;
 `;
 
-type SwapProps = {
+type SwapContainerProps = {
   loadWeb3Modal?: () => Promise<void>;
   provider?: Web3Provider;
 };
 
-export const Swap: FC<SwapProps> = ({ loadWeb3Modal, provider }) => {
+export const SwapContainer: FC<SwapContainerProps> = ({ loadWeb3Modal, provider }) => {
   const [fromToken, setFromToken] = useState(tokens.find((token) => token.symbol === 'WETH')!);
   const [toToken, setToToken] = useState<Token>(tokens[0]);
   const [pairAddress, setPairAddress] = useState<string>();
