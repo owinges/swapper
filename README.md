@@ -1,12 +1,49 @@
-# Getting Started with Create React App
+# Swapper
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Swapper is a user interface built with React that connects to Uniswap.
+
+It currently provides full functionality for swapping ETH/WETH for any of the listed tokens to choose from.
+
+## Current features
+
+- Swap ETH/WETH for one of 32 available tokens on Ethereum mainnet.
+- Swap ETH/WETH for DAI on Goerli, Kovan, Rinkeby or Ropsten testnets.
+
+## Upcoming features
+
+- Estimated gas price calculation.
+- Swap tokens for ETH/WETH.
+- Swap tokens for tokens.
+- Select other currencies for price reference.
+- Add tokens that aren't listed in the dropdown.
+
+## Prerequisites
+
+This app uses `pnpm` for package management (hence the `pnpm-lock.yaml`). If you don't already have `pnpm` installed, you can install it by running `npm i -g pnpm`. Newer versions of node come with `pnpm` installed by default.
+
+If you don't want to use `pnpm`, you can simply use `npm` or `yarn` instead, though that would be somewhat slower.
+
+## Getting started
+
+- Create a `.env` file and add an `ALCHEMY_KEY` containing your Alchemy API key.
+- Run `pnpm i`.
+- Run `pnpm start`.
 
 ## Available Scripts
 
-In the project directory, you can run:
+Aside from the usual Create React App scripts, this app also includes:
 
-### `npm start`
+### `pnpm lint`
+
+This runs eslint on all ts/tsx files and attempts to fix any issues it finds.
+
+### `pnpm format`
+
+This runs the formatter (prettier) on all ts/tsx files.\
+
+Below is the remaining Create React App boilerplate:
+
+### `pnpm start`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
@@ -14,12 +51,12 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
 
-### `npm test`
+### `pnpm test`
 
 Launches the test runner in the interactive watch mode.\
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
+### `pnpm run build`
 
 Builds the app for production to the `build` folder.\
 It correctly bundles React in production mode and optimizes the build for the best performance.
@@ -29,7 +66,7 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
+### `pnpm run eject`
 
 **Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
