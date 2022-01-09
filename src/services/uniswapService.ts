@@ -9,10 +9,14 @@ export class UniswapService {
   readonly defaultProvider = new AlchemyWebSocketProvider('mainnet', process.env.ALCHEMY_KEY);
   private _routerContract: Contract;
 
-  constructor(private _provider: Web3Provider) {
-    const signer = _provider.getSigner();
-
-    this._routerContract = new Contract(addresses[MAINNET_ID].router02, abis.router02, signer);
+  constructor(private _provider?: Web3Provider) {
+    if (_provider) {
+      const signer = _provider.getSigner();
+  
+      this._routerContract = new Contract(addresses[MAINNET_ID].router02, abis.router02, signer);
+    } else {
+      this._routerContract = new Contract(addresses[MAINNET_ID].router02, abis.router02, this.defaultProvider);
+    }
   }
 
   async getAmountsOut(fromAmount: string, path: string[]) {
@@ -38,6 +42,8 @@ export class UniswapService {
   }
 
   async handleSwap(fromInputValue: string, fromToken: Token, toToken: Token) {
+    if (!this._provider) return;
+
     const accounts = await this._provider.listAccounts();
     const time = Math.floor(Date.now() / 1000) + 200000;
     const deadline = BigNumber.from(time);

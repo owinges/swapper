@@ -71,8 +71,6 @@ export const Swap: FC<SwapProps> = ({ loadWeb3Modal, provider }) => {
   // Get the initial reserves whenever different tokens are selected.
   useEffect(() => {
     const getReserves = async () => {
-      if (!provider) return;
-
       console.log('getting new reserves');
 
       const uniswap = new UniswapService(provider);
@@ -100,11 +98,11 @@ export const Swap: FC<SwapProps> = ({ loadWeb3Modal, provider }) => {
     const listenForChanges = async () => {
       if (!pairAddress) return;
 
-      const defaultProvider = new AlchemyWebSocketProvider('mainnet', 'FUVN4YGFMCDIldERfaEGXkR6KhA5Grj8');
+      const defaultProvider = new UniswapService().defaultProvider;
 
       const exchangeContract = new Contract(pairAddress, abis.pair, defaultProvider);
 
-      console.log(`there are currently ${exchangeContract.listeners.length} active listeners`);
+      // TODO: Check if it's necessary to clean up these listeners.
       // exchangeContract.removeAllListeners();
 
       exchangeContract.on('Sync', (res0, res1) => {
@@ -115,6 +113,8 @@ export const Swap: FC<SwapProps> = ({ loadWeb3Modal, provider }) => {
 
         setReserves({ reserves0, reserves1 });
       });
+
+      console.log(`there are currently ${exchangeContract.listeners('Sync').length} active listeners`);
     };
 
     listenForChanges();
@@ -142,7 +142,7 @@ export const Swap: FC<SwapProps> = ({ loadWeb3Modal, provider }) => {
     if (target.id === 'fromInput') {
       setFromInputValue(target.value);
 
-      if (provider && Number(target.value) > 0) {
+      if (Number(target.value) > 0) {
         setIsLoadingToInput(true);
 
         const uniswap = new UniswapService(provider);
@@ -155,7 +155,7 @@ export const Swap: FC<SwapProps> = ({ loadWeb3Modal, provider }) => {
     } else {
       setToInputValue(target.value);
 
-      if (provider && Number(target.value) > 0) {
+      if (Number(target.value) > 0) {
         setIsLoadingFromInput(true);
 
         const uniswap = new UniswapService(provider);

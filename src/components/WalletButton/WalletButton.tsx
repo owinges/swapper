@@ -73,9 +73,9 @@ export const WalletButton: FC<WalletButtonProps> = ({ loadWeb3Modal, logoutOfWeb
     fetchAccount();
 
     // Remove any existing accountsChanged listeners as there should only be one active.
-    window.ethereum.removeAllListeners('accountsChanged');
+    window.ethereum?.removeAllListeners('accountsChanged');
 
-    window.ethereum.on('accountsChanged', (accounts: string[]) => {
+    window.ethereum?.on('accountsChanged', (accounts: string[]) => {
       console.log('fetching new account details');
 
       if (accounts.length === 0) return;
@@ -84,7 +84,7 @@ export const WalletButton: FC<WalletButtonProps> = ({ loadWeb3Modal, logoutOfWeb
       fetchAccount();
     });
 
-    console.log(`account listeners: ${window.ethereum.listenerCount('accountsChanged')}`);
+    console.log(`account listeners: ${window.ethereum?.listenerCount('accountsChanged')}`);
   }, [account, provider]);
 
   const handleClick = () => {

@@ -4,6 +4,8 @@ Swapper is a user interface built with React that connects to Uniswap.
 
 It currently provides full functionality for swapping ETH/WETH for any of the listed tokens to choose from.
 
+You can view the deployed app at: https://swapper-rho.vercel.app/
+
 ## Current features
 
 - Swap ETH/WETH for one of 32 available tokens on Ethereum mainnet.
