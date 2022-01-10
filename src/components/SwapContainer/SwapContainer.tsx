@@ -1,13 +1,14 @@
-import React, { FC, FormEvent, useEffect, useState } from 'react';
+import React, { FC, FormEvent, useEffect, useMemo, useState } from 'react';
+import { toast } from 'react-toastify';
 import styled from '@emotion/styled';
 import { Contract } from '@ethersproject/contracts';
 import { formatEther, formatUnits } from '@ethersproject/units';
 import { Web3Provider } from '@ethersproject/providers';
+import debounce from 'lodash.debounce';
 import { SwapButton, SwapFooter, TokenInput } from '..';
-import { Token, tokens } from '../TokenDropdown/tokenList';
 import { abis } from '../../contracts';
+import { Token, tokens } from '../TokenDropdown/tokenList';
 import { UniswapService } from '../../services/uniswapService';
-import { toast } from 'react-toastify';
 
 const Container = styled.section`
   background-color: ${({ theme }) => theme.colors.white};
@@ -113,7 +114,34 @@ export const SwapContainer: FC<SwapContainerProps> = ({ loadWeb3Modal, provider 
   const [isLoadingFromInput, setIsLoadingFromInput] = useState(false);
   const [isLoadingToInput, setIsLoadingToInput] = useState(false);
 
-  // TODO: Debounce this to prevent requests from being sent for each keystroke.
+  // Debounced in order to prevent calls from being made after every single keystroke.
+  const setToInputBasedOnFromInput = useMemo(
+    () => debounce(async (value: string) => {
+      const uniswap = new UniswapService(provider);
+      const { toAmount } = await uniswap.getAmountsOut(value, [fromToken.address, toToken.address]);
+
+      setIsLoadingToInput(false);
+
+      setToInputValue(toAmount.toFixed(4));
+    }, 300),
+    [fromToken.address, provider, toToken.address],
+  );
+
+  // Debounced in order to prevent calls from being made after every single keystroke.
+  const setFromInputBasedOnToInput = useMemo(
+    () => debounce(async (value: string) => {
+      const uniswap = new UniswapService(provider);
+      const { fromAmount } = await uniswap.getAmountsIn(value, [fromToken.address, toToken.address]);
+
+      setIsLoadingFromInput(false);
+
+      setFromInputValue(fromAmount.toFixed(4));
+    }, 300),
+    [fromToken.address, provider, toToken.address],
+  );
+
+  // Using the provided token amount, calculate the approximate token amount for the opposite input.
+  // This is done using onchain data in order to be as accurate as possible at the time of the input change.
   const handleInputChange = async (event: FormEvent) => {
     const target = event.target as HTMLInputElement;
 
@@ -122,26 +150,20 @@ export const SwapContainer: FC<SwapContainerProps> = ({ loadWeb3Modal, provider 
 
       if (Number(target.value) > 0) {
         setIsLoadingToInput(true);
-
-        const uniswap = new UniswapService(provider);
-        const { toAmount } = await uniswap.getAmountsOut(target.value, [fromToken.address, toToken.address]);
-
-        setIsLoadingToInput(false);
-
-        setToInputValue(toAmount.toFixed(4));
+        setToInputBasedOnFromInput(target.value);
+      } else {
+        setToInputValue('');
       }
-    } else {
+    }
+    
+    if (target.id === 'toInput') {
       setToInputValue(target.value);
 
       if (Number(target.value) > 0) {
         setIsLoadingFromInput(true);
-
-        const uniswap = new UniswapService(provider);
-        const { fromAmount } = await uniswap.getAmountsIn(target.value, [fromToken.address, toToken.address]);
-
-        setIsLoadingFromInput(false);
-
-        setFromInputValue(fromAmount.toFixed(4));
+        setFromInputBasedOnToInput(target.value);
+      } else {
+        setFromInputValue('');
       }
     }
   };

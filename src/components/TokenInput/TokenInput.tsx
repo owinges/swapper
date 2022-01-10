@@ -1,14 +1,14 @@
 import React, { FC, FormEvent, useEffect, useState } from 'react';
+import { useQuery } from 'react-query';
 import styled from '@emotion/styled';
+import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { formatUnits } from '@ethersproject/units';
 import { Web3Provider } from '@ethersproject/providers';
 import { LoadingSpinner, TokenDropdown } from '..';
-import { Token, tokens } from '../TokenDropdown/tokenList';
 import { abis } from '../../contracts';
+import { Token, tokens } from '../TokenDropdown/tokenList';
 import { getPriceOfCoins } from '../../services/coinGeckoService';
-import { useQuery } from 'react-query';
-import { BigNumber } from '@ethersproject/bignumber';
 
 const toCurrency = new Intl.NumberFormat('en-US', {
   style: 'currency',
