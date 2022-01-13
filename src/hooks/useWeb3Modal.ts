@@ -11,7 +11,6 @@ function useWeb3Modal(): [Web3Provider | undefined, () => Promise<void>, () => P
   // You can see other options at https://github.com/Web3Modal/web3modal
   const web3Modal = useMemo(() => {
     return new Web3Modal({
-      network: 'mainnet',
       cacheProvider: true,
     });
   }, []);

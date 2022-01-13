@@ -1,5 +1,6 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import styled from '@emotion/styled';
+import AnimateHeight from 'react-animate-height';
 import { Token } from '../TokenDropdown/tokenList';
 import { LoadingSpinner } from '..';
 
@@ -9,7 +10,7 @@ const Footer = styled.footer`
   cursor: pointer;
   display: flex;
   margin-bottom: 8px;
-  min-height: 40px;
+  min-height: 30px;
   padding: 4px 8px;
   transition: ${({ theme }) => theme.transition};
 
@@ -26,7 +27,7 @@ const Footer = styled.footer`
 
 type SwapFooterProps = {
   fromToken: Token;
-  toToken: Token;
+  toToken?: Token;
   prices?: {
     fromToken: number;
     toToken: number;
@@ -36,9 +37,16 @@ type SwapFooterProps = {
 
 export const SwapFooter: FC<SwapFooterProps> = ({ fromToken, prices, toToken, loading }) => {
   const [isFlipped, setIsFlipped] = useState(false);
+  const [height, setHeight] = useState('0%');
+
+  useEffect(() => {
+    if (loading && height === '0%') {
+      setHeight('auto');
+    }
+  }, [height, loading]);
 
   const renderPrices = () => {
-    if (!prices) return '';
+    if (!prices || !toToken) return '';
 
     if (isFlipped) {
       return `1 ${toToken.symbol} = ${prices.toToken.toFixed(4)} ${fromToken.symbol}`;
@@ -48,8 +56,10 @@ export const SwapFooter: FC<SwapFooterProps> = ({ fromToken, prices, toToken, lo
   };
 
   return (
-    <Footer onClick={() => setIsFlipped(!isFlipped)}>
-      {loading ? <LoadingSpinner size="sm" text="Fetching updated prices." /> : <span>{renderPrices()}</span>}
-    </Footer>
+    <AnimateHeight duration={300} height={height}>
+      <Footer onClick={() => setIsFlipped(!isFlipped)}>
+        {loading ? <LoadingSpinner size="sm" text="Fetching updated prices." /> : <span>{renderPrices()}</span>}
+      </Footer>
+    </AnimateHeight>
   );
 };

@@ -41,9 +41,10 @@ type SwapButtonProps = {
   loadWeb3Modal?: () => Promise<void>;
   onSwap?: () => Promise<void>;
   provider?: Web3Provider;
+  tokenIsApproved: boolean;
 };
 
-export const SwapButton: FC<SwapButtonProps> = ({ insufficientFunds = false, loadWeb3Modal, onSwap, provider }) => {
+export const SwapButton: FC<SwapButtonProps> = ({ insufficientFunds = false, loadWeb3Modal, onSwap, provider, tokenIsApproved }) => {
   const [account, setAccount] = useState<string>();
 
   useEffect(() => {
@@ -71,9 +72,19 @@ export const SwapButton: FC<SwapButtonProps> = ({ insufficientFunds = false, loa
     }
   };
 
+  const getButtonText = () => {
+    if (!account) return 'Connect Wallet';
+
+    if (insufficientFunds) return 'Insufficient funds';
+
+    if (!tokenIsApproved) return 'Approve';
+
+    return 'Swap';
+  };
+
   return (
     <Button disabled={insufficientFunds} onClick={handleClick}>
-      {insufficientFunds ? 'Insufficient funds' : account ? 'Swap' : 'Connect Wallet'}
+      {getButtonText()}
     </Button>
   );
 };

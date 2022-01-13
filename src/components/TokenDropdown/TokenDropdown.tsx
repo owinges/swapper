@@ -13,29 +13,29 @@ const Header = styled.button`
   border: none;
   border-radius: ${({ theme }) => theme.borderRadius.md};
   box-shadow: rgba(0, 0, 0, 0.075) 0px 6px 10px;
-  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
+  cursor: pointer;
   display: flex;
   height: 2.4rem;
   margin-left: 12px;
-  padding: 0px 8px;
+  padding: 8px 12px;
   text-decoration: none;
   transition: ${({ theme }) => theme.transition};
 
   &:hover {
-    background-color: ${({ disabled, theme }) => (disabled ? theme.colors.grayLight : theme.colors.grayDark)};
+    background-color: ${({ theme }) => theme.colors.grayDark};
   }
 
   img {
     border-radius: ${({ theme }) => theme.borderRadius.round};
     box-shadow: ${({ theme }) => theme.boxShadow.black};
     height: 24px;
-    margin-right: 6px;
+    margin-right: 8px;
     width: 24px;
   }
 
   span {
     color: ${({ theme }) => theme.colors.black};
-    font-size: ${({ theme }) => theme.fontSize.xl};
+    font-size: ${({ theme }) => theme.fontSize.lg};
     font-weight: ${({ theme }) => theme.fontWeight.bold};
   }
 `;
@@ -55,6 +55,7 @@ const ListContainer = styled.div<ListProps>`
   position: absolute;
   top: 2.8rem;
   transform: translateX(-50%);
+  z-index: 1;
 `;
 
 const List = styled.div`
@@ -112,19 +113,17 @@ type Props = {
   onSelect: (token: Token) => void;
   selectedToken?: Token;
   tokens: Token[];
-  // Temporary prop; only as long as ETH/WETH is the only allowed "from" input token.
-  disabled?: boolean;
 };
 
-export const TokenDropdown: FC<Props> = ({ onSelect, selectedToken, tokens, disabled }) => {
+export const TokenDropdown: FC<Props> = ({ onSelect, selectedToken, tokens }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(0);
 
   const toggleOpen = () => {
-    // Temporarily measure to disable changing the "from" token from ETH/WETH.
-    if (!disabled) {
-      setIsOpen(!isOpen);
-    }
+    // Temporary measure until token to token transfers work.
+    if (tokens.length === 1 && tokens[0].symbol === 'WETH') return;
+
+    setIsOpen(!isOpen);
   };
 
   const handleSelection = (token: Token) => {
@@ -173,14 +172,14 @@ export const TokenDropdown: FC<Props> = ({ onSelect, selectedToken, tokens, disa
 
   return (
     <Dropdown>
-      <Header onClick={toggleOpen} ref={headerRef} disabled={disabled}>
+      <Header onClick={toggleOpen} ref={headerRef}>
         {selectedToken ? (
           <>
             <img src={selectedToken.logoURI} alt={`${selectedToken.name} logo`} />
             <span>{selectedToken.symbol}</span>
           </>
         ) : (
-          <span>'Select a token'</span>
+          <span>Select a token</span>
         )}
       </Header>
       <ListContainer show={isOpen} ref={listContainerRef}>

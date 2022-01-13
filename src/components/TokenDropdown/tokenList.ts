@@ -8,8 +8,7 @@ export interface Token {
   symbol: string;
 }
 
-// Only contains tokens that pair with WETH [TOKEN-WETH]
-// i.e. filters out [WETH-TOKEN]
+// Ethereum mainnet
 export const tokens: Token[] = [
   {
     address: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9',
@@ -318,5 +317,53 @@ export const tokens: Token[] = [
     logoURI: 'https://assets.coingecko.com/coins/images/11849/thumb/yfi-192x192.png?1598325330',
     name: 'yearn finance',
     symbol: 'YFI',
+  },
+];
+
+// Ropsten
+export const tokensRopsten: Token[] = [
+  {
+    address: '0xaD6D458402F60fD3Bd25163575031ACDce07538D',
+    chainId: 1,
+    coingeckoId: 'dai',
+    decimals: 18,
+    logoURI:
+      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png',
+    name: 'Dai Stablecoin',
+    symbol: 'DAI',
+  },
+  {
+    address: '0xc778417E063141139Fce010982780140Aa0cD5Ab',
+    chainId: 1,
+    coingeckoId: 'weth',
+    decimals: 18,
+    logoURI:
+      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+    name: 'Wrapped Ether',
+    symbol: 'WETH',
+  },
+];
+
+// Goerli
+export const tokensGoerli: Token[] = [
+  {
+    address: '0x697Ed3E98aaeCFa3121F536251F9D500de159dBa',
+    chainId: 1,
+    coingeckoId: 'dai',
+    decimals: 18,
+    logoURI:
+      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png',
+    name: 'Dai Stablecoin',
+    symbol: 'DAI',
+  },
+  {
+    address: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
+    chainId: 1,
+    coingeckoId: 'weth',
+    decimals: 18,
+    logoURI:
+      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+    name: 'Wrapped Ether',
+    symbol: 'WETH',
   },
 ];

@@ -8,13 +8,11 @@ You can view the deployed app at: https://swapper-rho.vercel.app/
 
 ## Current features
 
-- Swap ETH/WETH for one of 32 available tokens on Ethereum mainnet.
+- Swap between ETH/WETH and one of 32 available tokens on Ethereum mainnet.
 
 ## Upcoming features
 
-- Swap ETH/WETH for DAI on Goerli, Kovan, Rinkeby or Ropsten testnets.
 - Estimated gas price calculation.
-- Swap tokens for ETH/WETH.
 - Swap tokens for tokens.
 - Select other currencies for price reference.
 - Add tokens that aren't listed in the dropdown.
@@ -28,7 +26,7 @@ If you don't want to use `pnpm`, you can simply use `npm` or `yarn` instead, tho
 
 ## Getting started
 
-- Create a `.env` file and add an `ALCHEMY_KEY` containing your Alchemy API key.
+- Create a `.env` file and add an `REACT_APP_ALCHEMY_KEY` containing your Alchemy API key.
 - Run `pnpm i`.
 - Run `pnpm start`.
 

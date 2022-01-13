@@ -7,7 +7,7 @@ import { formatUnits } from '@ethersproject/units';
 import { Web3Provider } from '@ethersproject/providers';
 import { LoadingSpinner, TokenDropdown } from '..';
 import { abis } from '../../contracts';
-import { Token, tokens } from '../TokenDropdown/tokenList';
+import { Token } from '../TokenDropdown/tokenList';
 import { getPriceOfCoins } from '../../services/coinGeckoService';
 
 const toCurrency = new Intl.NumberFormat('en-US', {
@@ -57,14 +57,29 @@ type TokenInputProps = {
   onTokenSelect: (token: Token) => void;
   provider?: Web3Provider;
   selectedToken?: Token;
+  tokens: Token[];
   value: string;
 };
 
-export const TokenInput: FC<TokenInputProps> = ({ id, isLoading, onInputChange, onTokenSelect, provider, selectedToken, value }) => {
+export const TokenInput: FC<TokenInputProps> = ({
+  id,
+  isLoading,
+  onInputChange,
+  onTokenSelect,
+  provider,
+  selectedToken,
+  tokens,
+  value,
+}) => {
   const [tokenBalance, setTokenBalance] = useState<string>('0');
-  const { data: coin, isFetching } = useQuery(selectedToken!.address, () =>
-    getPriceOfCoins([selectedToken!.coingeckoId]).then((res) => res.data),
-  );
+
+  const getPriceQuery = async () => {
+    const id = selectedToken ? [selectedToken.coingeckoId] : [''];
+
+    return (await getPriceOfCoins(id)).data;
+  };
+
+  const { data: coin, isFetching } = useQuery(selectedToken?.address || '', getPriceQuery, { enabled: !!selectedToken });
 
   useEffect(() => {
     async function fetchAccount() {
@@ -98,11 +113,11 @@ export const TokenInput: FC<TokenInputProps> = ({ id, isLoading, onInputChange, 
   }, [coin, provider, selectedToken]);
 
   const getPrice = () => {
-    if (!selectedToken || !coin || !coin[selectedToken.coingeckoId]) return;
+    if (!selectedToken || !coin || !coin[selectedToken.coingeckoId]) return '';
 
     const valueByCurrency = coin[selectedToken.coingeckoId].usd * Number(value);
 
-    return coin ? toCurrency(valueByCurrency) : 'Unknown price';
+    return coin ? `~${toCurrency(valueByCurrency)}` : 'Unknown price';
   };
 
   const handleInputChange = (event: FormEvent<HTMLInputElement>) => {
@@ -127,10 +142,10 @@ export const TokenInput: FC<TokenInputProps> = ({ id, isLoading, onInputChange, 
         ) : (
           <input id={id} type="text" placeholder="0.0" value={value} onChange={handleInputChange} />
         )}
-        <TokenDropdown onSelect={onTokenSelect} selectedToken={selectedToken} tokens={tokens} disabled={id === 'fromInput'} />
+        <TokenDropdown onSelect={onTokenSelect} selectedToken={selectedToken} tokens={tokens} />
       </Row>
       <Row>
-        <span>{isFetching ? <LoadingSpinner style={{ position: 'absolute' }} /> : `~${getPrice()}`}</span>
+        <span>{isFetching ? <LoadingSpinner style={{ position: 'absolute' }} /> : getPrice()}</span>
         <span>Balance: {tokenBalance}</span>
       </Row>
     </InputContainer>
