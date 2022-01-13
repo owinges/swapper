@@ -127,13 +127,13 @@ export class UniswapService {
 
   async getPairAddress(fromTokenAddress: string, toTokenAddress: string): Promise<string> {
     const factory = await this._routerContract.factory();
-    const factoryContract = new Contract(factory, abis.factory, this._provider);
+    const factoryContract = new Contract(factory, abis.factory, this._provider || this.defaultProvider);
 
     return await factoryContract.getPair(fromTokenAddress, toTokenAddress);
   }
 
   async getReservesForPair(pairAddress: string, decimals0: number, decimals1: number, flipped: boolean) {
-    const pairContract = new Contract(pairAddress, abis.pair, this._provider);
+    const pairContract = new Contract(pairAddress, abis.pair, this._provider || this.defaultProvider);
     const reserves: [bigint, bigint, bigint] = await pairContract.getReserves();
 
     if (flipped) {
