@@ -4,11 +4,11 @@ import styled from '@emotion/styled';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { formatUnits } from '@ethersproject/units';
-import { Web3Provider } from '@ethersproject/providers';
 import { LoadingSpinner, TokenDropdown } from '..';
 import { abis } from '../../contracts';
 import { Token } from '../TokenDropdown/tokenList';
 import { getPriceOfCoins } from '../../services/coinGeckoService';
+import { useUniswap } from '../../context/UniswapContext';
 
 const toCurrency = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -55,22 +55,13 @@ type TokenInputProps = {
   isLoading: boolean;
   onInputChange: (event: FormEvent<HTMLInputElement>) => void;
   onTokenSelect: (token: Token) => void;
-  provider?: Web3Provider;
   selectedToken?: Token;
   tokens: Token[];
   value: string;
 };
 
-export const TokenInput: FC<TokenInputProps> = ({
-  id,
-  isLoading,
-  onInputChange,
-  onTokenSelect,
-  provider,
-  selectedToken,
-  tokens,
-  value,
-}) => {
+export const TokenInput: FC<TokenInputProps> = ({ id, isLoading, onInputChange, onTokenSelect, selectedToken, tokens, value }) => {
+  const { provider } = useUniswap();
   const [tokenBalance, setTokenBalance] = useState<string>('0');
 
   const getPriceQuery = async () => {

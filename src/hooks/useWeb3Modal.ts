@@ -1,10 +1,11 @@
-import { Web3Provider } from '@ethersproject/providers';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Web3Provider } from '@ethersproject/providers';
 import Web3Modal from 'web3modal';
+import { useUniswap } from '../context/UniswapContext';
 
-function useWeb3Modal(): [Web3Provider | undefined, () => Promise<void>, () => Promise<void>] {
-  const [provider, setProvider] = useState<Web3Provider>();
+function useWeb3Modal(): [() => Promise<void>, () => Promise<void>] {
   const [autoLoaded, setAutoLoaded] = useState(false);
+  const { setProvider } = useUniswap();
 
   // TODO: Add support for WalletConnect.
   // Web3Modal also supports many other wallets.
@@ -20,7 +21,7 @@ function useWeb3Modal(): [Web3Provider | undefined, () => Promise<void>, () => P
     const newProvider = await web3Modal.connect();
 
     setProvider(new Web3Provider(newProvider));
-  }, [web3Modal]);
+  }, [setProvider, web3Modal]);
 
   const logoutOfWeb3Modal = useCallback(
     async function () {
@@ -38,7 +39,7 @@ function useWeb3Modal(): [Web3Provider | undefined, () => Promise<void>, () => P
     }
   }, [autoLoaded, loadWeb3Modal, setAutoLoaded, web3Modal.cachedProvider]);
 
-  return [provider, loadWeb3Modal, logoutOfWeb3Modal];
+  return [loadWeb3Modal, logoutOfWeb3Modal];
 }
 
 export default useWeb3Modal;

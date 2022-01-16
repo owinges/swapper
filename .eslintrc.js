@@ -13,18 +13,20 @@ module.exports = {
             'error',
             {
                 selector: 'variableLike',
-                format: ['camelCase', 'PascalCase']
+                format: ['camelCase', 'PascalCase'],
+                leadingUnderscore: 'allow',
             },
             {
                 selector: 'memberLike',
                 modifiers: ['private'],
                 format: ['camelCase'],
-                leadingUnderscore: 'require'
+                leadingUnderscore: 'require',
             },
             {
                 selector: 'variable',
                 modifiers: ['const'],
-                format: ['camelCase', 'PascalCase', 'UPPER_CASE']
+                format: ['camelCase', 'PascalCase', 'UPPER_CASE'],
+                leadingUnderscore: 'allow',
             },
             {
                 selector: 'typeLike',

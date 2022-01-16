@@ -1,7 +1,8 @@
 import React, { FC, useEffect, useState } from 'react';
 import styled from '@emotion/styled';
-import { Web3Provider } from '@ethersproject/providers';
 import { formatEther } from '@ethersproject/units';
+import { useUniswap } from '../../context/UniswapContext';
+import useWeb3Modal from '../../hooks/useWeb3Modal';
 
 const Button = styled.button`
   background-color: ${({ theme }) => theme.colors.white};
@@ -21,16 +22,12 @@ const Button = styled.button`
   }
 `;
 
-type WalletButtonProps = {
-  loadWeb3Modal?: () => Promise<void>;
-  logoutOfWeb3Modal?: () => Promise<void>;
-  provider?: Web3Provider;
-};
-
-export const WalletButton: FC<WalletButtonProps> = ({ loadWeb3Modal, logoutOfWeb3Modal, provider }) => {
+export const WalletButton: FC = () => {
+  const [loadWeb3Modal, logoutOfWeb3Modal] = useWeb3Modal();
   const [account, setAccount] = useState<string>();
   const [ethBalance, setEthBalance] = useState<string>();
   const [rendered, setRendered] = useState<string>();
+  const { provider } = useUniswap();
 
   useEffect(() => {
     async function fetchAccount() {

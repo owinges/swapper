@@ -1,6 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
 import styled from '@emotion/styled';
-import { Web3Provider } from '@ethersproject/providers';
+import { useUniswap } from '../../context/UniswapContext';
+import useWeb3Modal from '../../hooks/useWeb3Modal';
 
 const Button = styled.button`
   background-color: ${({ theme }) => theme.colors.primaryLighter};
@@ -38,14 +39,14 @@ const Button = styled.button`
 
 type SwapButtonProps = {
   insufficientFunds?: boolean;
-  loadWeb3Modal?: () => Promise<void>;
   onSwap?: () => Promise<void>;
-  provider?: Web3Provider;
   tokenIsApproved: boolean;
 };
 
-export const SwapButton: FC<SwapButtonProps> = ({ insufficientFunds = false, loadWeb3Modal, onSwap, provider, tokenIsApproved }) => {
+export const SwapButton: FC<SwapButtonProps> = ({ insufficientFunds = false, onSwap, tokenIsApproved }) => {
+  const { provider } = useUniswap();
   const [account, setAccount] = useState<string>();
+  const [loadWeb3Modal] = useWeb3Modal();
 
   useEffect(() => {
     async function fetchAccount() {

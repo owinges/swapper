@@ -3,13 +3,12 @@ import { toast } from 'react-toastify';
 import styled from '@emotion/styled';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
-import { Web3Provider } from '@ethersproject/providers';
 import { formatEther, formatUnits } from '@ethersproject/units';
 import debounce from 'lodash.debounce';
 import { SwapButton, SwapFooter, TokenInput } from '..';
 import { abis } from '../../contracts';
 import { Token, tokens } from '../TokenDropdown/tokenList';
-import { UniswapService } from '../../services/uniswapService';
+import { useUniswap } from '../../context/UniswapContext';
 
 const Container = styled.section`
   background-color: ${({ theme }) => theme.colors.white};
@@ -44,12 +43,21 @@ const FlipButton = styled.button`
   }
 `;
 
-type SwapContainerProps = {
-  loadWeb3Modal?: () => Promise<void>;
-  provider?: Web3Provider;
-};
+export const SwapContainer: FC = () => {
+  const {
+    defaultProvider,
+    provider,
+    getPairAddress,
+    getReservesForPair,
+    checkTokenAllowance,
+    getAmountsOut,
+    getAmountsIn,
+    approveTokenTransfer,
+    swapExactETHForTokens,
+    swapExactTokensForETH,
+    swapExactTokensForTokens,
+  } = useUniswap();
 
-export const SwapContainer: FC<SwapContainerProps> = ({ loadWeb3Modal, provider }) => {
   // Non-null assertion is fine because the tokens array is static and WETH is in it.
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const [fromToken, setFromToken] = useState(tokens.find((token) => token.symbol === 'WETH')!);
@@ -93,11 +101,9 @@ export const SwapContainer: FC<SwapContainerProps> = ({ loadWeb3Modal, provider 
     if (!toToken) return;
 
     const getReserves = async () => {
-      const uniswap = new UniswapService(provider);
-
       setLoadingReserves(true);
 
-      const pairAddress = await uniswap.getPairAddress(fromToken.address, toToken.address);
+      const pairAddress = await getPairAddress(fromToken.address, toToken.address);
 
       if (pairAddress === '0x0000000000000000000000000000000000000000') {
         console.log('There is no pair for these tokens.');
@@ -107,7 +113,7 @@ export const SwapContainer: FC<SwapContainerProps> = ({ loadWeb3Modal, provider 
         // Uniswap arranges reserves by each address' size, with the smallest being first.
         const flipped = BigNumber.from(fromToken.address).gt(BigNumber.from(toToken.address));
 
-        const { reserves0, reserves1 } = await uniswap.getReservesForPair(pairAddress, fromToken.decimals, toToken.decimals, flipped);
+        const { reserves0, reserves1 } = await getReservesForPair(pairAddress, fromToken.decimals, toToken.decimals, flipped);
 
         setReserves({ reserves0, reserves1 });
       }
@@ -116,14 +122,12 @@ export const SwapContainer: FC<SwapContainerProps> = ({ loadWeb3Modal, provider 
     };
 
     getReserves();
-  }, [fromToken.address, fromToken.decimals, provider, toToken]);
+  }, [fromToken.address, fromToken.decimals, getPairAddress, getReservesForPair, provider, toToken]);
 
   // Subscribe to changes in reserves for the selected pair.
   useEffect(() => {
     const listenForChanges = async () => {
       if (!pairAddress) return;
-
-      const defaultProvider = new UniswapService().defaultProvider;
 
       const exchangeContract = new Contract(pairAddress, abis.pair, defaultProvider);
 
@@ -136,7 +140,7 @@ export const SwapContainer: FC<SwapContainerProps> = ({ loadWeb3Modal, provider 
     };
 
     listenForChanges();
-  }, [pairAddress]);
+  }, [defaultProvider, pairAddress]);
 
   // Set prices whenever reserves change.
   useEffect(() => {
@@ -155,9 +159,7 @@ export const SwapContainer: FC<SwapContainerProps> = ({ loadWeb3Modal, provider 
     if (fromToken.symbol === 'WETH') return;
 
     const checkIfApprovalNeeded = async () => {
-      const uniswap = new UniswapService(provider);
-
-      const remainingAllowance = await uniswap.checkTokenAllowance(fromToken.address);
+      const remainingAllowance = await checkTokenAllowance(fromToken.address);
 
       if (remainingAllowance === 0) {
         setTokenIsApproved(false);
@@ -165,7 +167,7 @@ export const SwapContainer: FC<SwapContainerProps> = ({ loadWeb3Modal, provider 
     };
 
     checkIfApprovalNeeded();
-  }, [fromToken.address, fromToken.symbol, provider]);
+  }, [checkTokenAllowance, fromToken.address, fromToken.symbol, provider]);
 
   const [isLoadingFromInput, setIsLoadingFromInput] = useState(false);
   const [isLoadingToInput, setIsLoadingToInput] = useState(false);
@@ -176,15 +178,13 @@ export const SwapContainer: FC<SwapContainerProps> = ({ loadWeb3Modal, provider 
       debounce(async (value: string) => {
         if (!toToken) return;
 
-        const uniswap = new UniswapService(provider);
-
-        const { toAmount } = await uniswap.getAmountsOut(value, [fromToken.address, toToken.address]);
+        const { toAmount } = await getAmountsOut(value, [fromToken.address, toToken.address]);
 
         setIsLoadingToInput(false);
 
         setToInputValue(toAmount.toFixed(4));
       }, 300),
-    [fromToken.address, provider, toToken],
+    [fromToken.address, getAmountsOut, toToken],
   );
 
   // Debounced in order to prevent calls from being made after every single keystroke.
@@ -193,14 +193,13 @@ export const SwapContainer: FC<SwapContainerProps> = ({ loadWeb3Modal, provider 
       debounce(async (value: string) => {
         if (!toToken) return;
 
-        const uniswap = new UniswapService(provider);
-        const { fromAmount } = await uniswap.getAmountsIn(value, [fromToken.address, toToken.address]);
+        const { fromAmount } = await getAmountsIn(value, [fromToken.address, toToken.address]);
 
         setIsLoadingFromInput(false);
 
         setFromInputValue(fromAmount.toFixed(4));
       }, 300),
-    [fromToken.address, provider, toToken],
+    [fromToken.address, getAmountsIn, toToken],
   );
 
   // Using the provided token amount, calculate the approximate token amount for the opposite input.
@@ -236,11 +235,9 @@ export const SwapContainer: FC<SwapContainerProps> = ({ loadWeb3Modal, provider 
 
     if (!toToken) return;
 
-    const uniswap = new UniswapService(provider);
-
     if (!tokenIsApproved) {
       try {
-        await uniswap.approveTokenTransfer(fromToken.address);
+        await approveTokenTransfer(fromToken.address);
 
         return setTokenIsApproved(true);
       } catch (exception: any) {
@@ -253,11 +250,11 @@ export const SwapContainer: FC<SwapContainerProps> = ({ loadWeb3Modal, provider 
     let swap: () => Promise<any>;
 
     if (fromToken.symbol === 'WETH') {
-      swap = async () => uniswap.swapExactETHForTokens(fromInputValue, fromToken, toToken);
+      swap = async () => swapExactETHForTokens(fromInputValue, fromToken, toToken);
     } else if (toToken.symbol === 'WETH') {
-      swap = async () => uniswap.swapExactTokensForETH(fromInputValue, fromToken, toToken);
+      swap = async () => swapExactTokensForETH(fromInputValue, fromToken, toToken);
     } else {
-      swap = async () => uniswap.swapExactTokensForTokens(fromInputValue, fromToken, toToken);
+      swap = async () => swapExactTokensForTokens(fromInputValue, fromToken, toToken);
     }
 
     try {
@@ -267,6 +264,8 @@ export const SwapContainer: FC<SwapContainerProps> = ({ loadWeb3Modal, provider 
 
       if (exception.code === 'INSUFFICIENT_FUNDS') {
         toast.error('You have insufficient funds for this swap.');
+      } else if (exception.code === 4001) {
+        toast.info('Transaction cancelled.');
       } else {
         toast.error('Something went wrong with the swap you attempted.');
       }
@@ -298,7 +297,6 @@ export const SwapContainer: FC<SwapContainerProps> = ({ loadWeb3Modal, provider 
         isLoading={isLoadingFromInput}
         onInputChange={handleInputChange}
         onTokenSelect={setFromToken}
-        provider={provider}
         selectedToken={fromToken}
         tokens={getFilteredTokens(toToken)}
         value={fromInputValue}
@@ -313,19 +311,12 @@ export const SwapContainer: FC<SwapContainerProps> = ({ loadWeb3Modal, provider 
         isLoading={isLoadingToInput}
         onInputChange={handleInputChange}
         onTokenSelect={setToToken}
-        provider={provider}
         selectedToken={toToken}
         tokens={getFilteredTokens(fromToken)}
         value={toInputValue}
       />
       <SwapFooter fromToken={fromToken} prices={prices} toToken={toToken} loading={loadingReserves} />
-      <SwapButton
-        tokenIsApproved={tokenIsApproved}
-        insufficientFunds={insufficientFunds}
-        loadWeb3Modal={loadWeb3Modal}
-        onSwap={handleSwap}
-        provider={provider}
-      />
+      <SwapButton tokenIsApproved={tokenIsApproved} insufficientFunds={insufficientFunds} onSwap={handleSwap} />
     </Container>
   );
 };
